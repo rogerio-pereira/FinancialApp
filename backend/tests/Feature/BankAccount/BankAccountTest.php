@@ -143,16 +143,6 @@ class BankAccountTest extends TestCase
         $this->actingAs(factory(User::class)->create(), 'api');
         $bankAccount = factory(BankAccount::class)->create();
 
-        $response = $this->get('/api/bank-accounts');
-
-        $response->assertOk()
-            ->assertJsonCount(1)
-            ->assertJson([[
-                'id' => 1,
-                'name' => $bankAccount->name,
-                'initialBalance' => $bankAccount->initialBalance
-            ]]);
-
         //PUT
         $request = $this->put('/api/bank-accounts/1', ['name' => 'Update Bank Acount', 'initialBalance' => 30]);
 
@@ -166,12 +156,7 @@ class BankAccountTest extends TestCase
         $response = $this->get('/api/bank-accounts');
 
         $response->assertOk()
-            ->assertJsonCount(1)
-            ->assertJson([[
-                'id' => 1,
-                'name' => 'Update Bank Acount',
-                'initialBalance' => 30
-            ]]);
+            ->assertJsonCount(1);
     }
 
     /**
@@ -182,17 +167,7 @@ class BankAccountTest extends TestCase
         $this->actingAs(factory(User::class)->create(), 'api');
         $bankAccount = factory(BankAccount::class)->create();
 
-        $response = $this->get('/api/bank-accounts');
-
-        $response->assertOk()
-            ->assertJsonCount(1)
-            ->assertJson([[
-                'id' => 1,
-                'name' => $bankAccount->name,
-                'initialBalance' => $bankAccount->initialBalance
-            ]]);
-
-        //PUT
+        //DELETE
         $request = $this->delete('/api/bank-accounts/1');
 
         $request->assertOk();
