@@ -1,2 +1,2 @@
 # FinancialApp
-Financial App using VueJs and Laravel 7
+Financial App using VueJs and Laravel 6
