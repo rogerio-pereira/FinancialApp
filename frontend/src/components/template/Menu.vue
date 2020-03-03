@@ -1,26 +1,30 @@
 <template>
-    <div>
-        <b-navbar toggleable="lg" type="dark" variant="info">
-            <b-navbar-brand href="#">NavBar</b-navbar-brand>
+    <div class="row navbarContainer">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand" href="/">Financial App</a>
+                <button class="navbar-toggler btn btn-light" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
 
-            <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                        <li class="nav-item active">
+                            <router-link to='Accounts' class='nav-link'>Accounts</router-link>
+                        </li>
 
-            <b-collapse id="nav-collapse" is-nav>
-                <!-- Right aligned nav items -->
-                <b-navbar-nav class="ml-auto">
-                    <b-nav-item href='Acounts'>
-                        Acounts
-                    </b-nav-item>
-                    <b-nav-item href='Categories'>
-                        Categories
-                    </b-nav-item>
-                    <b-nav-item href='Expenses'>
-                        Expenses
-                    </b-nav-item>
-                </b-navbar-nav>
-            </b-collapse>
-        </b-navbar>
+                        <li class="nav-item">
+                            <router-link to='Categories' class='nav-link'>Categories</router-link>
+                        </li>
+
+                        <li class="nav-item">
+                            <router-link to='Transactions' class='nav-link'>Transactions</router-link>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         </div>
+    </div>     
 </template>
 
 <script>
@@ -33,6 +37,27 @@
     }
 </script>
 
-<style scoped>
+<style>
+    .navbarContainer
+    {
+        background: #093028; /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, #093028, #237a57); /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, #093028, #237a57); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    }
 
+    .navbar a
+    {
+        color:white;
+
+        font-size: 1.2em;
+    }
+
+    .navbar a:hover{
+        color:white;
+        text-decoration: underline;
+    }
+
+    button.navbar-toggler {
+        background-color: white;
+    }
 </style>
