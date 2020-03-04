@@ -18,10 +18,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for='bankAccount in bankAccounts' :key='bankAccount.id'>
+                    <tr v-for='(bankAccount, index) in bankAccounts' :key='index'>
                         <td>
-                            <a href='' class='btn btn-info mr-2'><i class="fas fa-edit"></i></a>
-                            <a href='' class='btn btn-danger'><i class="fas fa-trash-alt"></i></a>
+                            <a href='' class='btn btn-info text-white mr-2'><i class="fas fa-edit"></i></a>
+                            <a class='btn btn-danger text-white' @click='deleteBankAccount(bankAccount.id, index)'><i class="fas fa-trash-alt"></i></a>
                         </td>
                         <td>{{bankAccount.id}}</td>
                         <td>{{bankAccount.name}}</td>
@@ -42,6 +42,17 @@
         },
         created() {
             this.$http.get('bank-accounts').then(res => {this.bankAccounts = res.data})
+        },
+        methods: {
+            deleteBankAccount(id, index) {
+                this.$http.delete('bank-accounts/'+id)
+                    .then(() => {
+                        this.bankAccounts.splice(index, 1);
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    });
+            }
         }
     }
 </script>

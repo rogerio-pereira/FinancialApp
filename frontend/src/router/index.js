@@ -2,8 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import Home from '../views/Home.vue'
-import Accounts from '../views/Accounts.vue'
 import Login from '../views/Login.vue'
+
+import AccountsIndex from '../views/Accounts/Index.vue'
 
 Vue.use(VueRouter)
 
@@ -21,7 +22,7 @@ const routes = [
   {
     path: '/accounts',
     name: 'accounts',
-    component: Accounts
+    component: AccountsIndex
   },
 ]
 
