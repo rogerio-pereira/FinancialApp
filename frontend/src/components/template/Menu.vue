@@ -20,6 +20,10 @@
                         <li class="nav-item">
                             <router-link to='Transactions' class='nav-link'>Transactions</router-link>
                         </li>
+
+                        <li class="nav-item">
+                            <a href='/' @click.prevent.stop='logout()' class='nav-link'>Logout</a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -32,6 +36,12 @@
         data() {
             return {
 
+            }
+        },
+        methods: {
+            logout() {
+                this.$http.defaults.headers.common['Authorization'] = null
+                this.$router.push({ name: 'login'})
             }
         }
     }

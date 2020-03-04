@@ -19,17 +19,25 @@ class ApiAuthController extends Controller
             ], 401);
 
         $user = Auth::user();
-        $tokenResult = $user->createToken('Financial App Personal Access Client')->accessToken;
+        $tokenResult = $user->createToken('Financial App Personal Access Client');
         $token = $tokenResult->token;        
         
         $token->save();        
         
-        return response()->json([
-            'access_token' => $tokenResult,
+        return [
+            'access_token' => $tokenResult->accessToken,
             'token_type' => 'Bearer',
             'expires_at' => Carbon::parse(
                 $tokenResult->token->expires_at
             )->toDateTimeString()
-        ]);
+        ];
+    }
+
+    public function AuthUser()
+    {
+        if(Auth::guest())
+            return [];
+
+        return Auth::user();
     }
 }

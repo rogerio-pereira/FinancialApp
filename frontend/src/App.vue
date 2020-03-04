@@ -20,7 +20,12 @@
         components: {
             MenuApp,
             FooterApp
-        }
+        },
+        data() {
+            return {
+                user: null
+            }
+        },    
     }
 </script>
 

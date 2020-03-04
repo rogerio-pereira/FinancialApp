@@ -17,7 +17,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/login', 'ApiAuthController@login')->name('api.login');
+Route::post('/login', 'ApiAuthController@login');
+Route::post('/logout', 'ApiAuthController@logout');
+Route::get('/auth-user', 'ApiAuthController@AuthUser');
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('bank-accounts', 'BankAccountController');
