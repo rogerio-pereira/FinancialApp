@@ -40,8 +40,13 @@
                     password: this.password
                 })
                 .then(response => {
-                    this.$http.defaults.headers.common['Authorization'] = 'Bearer '+response.data.access_token
+                    const token = response.data.access_token
+
+                    this.$store.commit('setToken', token)
+                    this.$http.defaults.headers.common['Authorization'] = 'Bearer '+token
+                    
                     this.$router.push({ name: 'home'})
+
                 }) 
                 .catch(error => {
                     console.log(error);

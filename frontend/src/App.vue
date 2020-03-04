@@ -4,7 +4,9 @@
 
         <div class='row content my-3 mb-5'>
             <div class='container'>
-                <router-view/>
+                <transition enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp" mode='out-in'>
+                    <router-view/>
+                </transition>
             </div>
         </div>
 
@@ -25,7 +27,17 @@
             return {
                 user: null
             }
-        },    
+        },
+        created() {
+            if(this.$store.state.PassportApiToken.token) {
+                console.log('ok')
+                this.$http.defaults.headers.common['Authorization'] = 'Bearer '+this.$store.state.PassportApiToken.token
+            }
+            else {
+                console.log('nao')
+                this.$router.push({ name: 'login'})
+            }
+        }
     }
 </script>
 

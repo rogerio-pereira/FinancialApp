@@ -2,30 +2,33 @@
     <div class="row navbarContainer">
         <div class="container">
             <nav class="navbar navbar-expand-lg">
-                <a class="navbar-brand" href="/">Financial App</a>
+                <router-link to='/' class='navbar-brand'>Financial App</router-link>
                 <button class="navbar-toggler btn btn-light" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false">
                     <i class="fas fa-bars"></i>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbar">
-                    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-                        <li class="nav-item active">
-                            <router-link to='Accounts' class='nav-link'>Accounts</router-link>
-                        </li>
 
-                        <li class="nav-item">
-                            <router-link to='Categories' class='nav-link'>Categories</router-link>
-                        </li>
+                <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut" mode='out-in'>
+                    <div class="collapse navbar-collapse" id="navbar" v-if='this.$store.state.PassportApiToken.token'>
+                        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                            <li class="nav-item active">
+                                <router-link to='Accounts' class='nav-link'>Accounts</router-link>
+                            </li>
 
-                        <li class="nav-item">
-                            <router-link to='Transactions' class='nav-link'>Transactions</router-link>
-                        </li>
+                            <li class="nav-item">
+                                <router-link to='Categories' class='nav-link'>Categories</router-link>
+                            </li>
 
-                        <li class="nav-item">
-                            <a href='/' @click.prevent.stop='logout()' class='nav-link'>Logout</a>
-                        </li>
-                    </ul>
-                </div>
+                            <li class="nav-item">
+                                <router-link to='Transactions' class='nav-link'>Transactions</router-link>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href='/' @click.prevent.stop='logout()' class='nav-link'>Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </transition>
             </nav>
         </div>
     </div>     
@@ -40,6 +43,7 @@
         },
         methods: {
             logout() {
+                this.$store.commit('setToken', null)
                 this.$http.defaults.headers.common['Authorization'] = null
                 this.$router.push({ name: 'login'})
             }
