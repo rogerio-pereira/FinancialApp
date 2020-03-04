@@ -45,7 +45,7 @@
 
     h1 {
         font-size: 2.2em;
-        font-weight: bolder;
+        font-weight: 700 !important;
     }
 
     div.content{
