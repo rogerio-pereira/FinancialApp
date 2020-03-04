@@ -4,7 +4,7 @@
             <h1 class='text-center'>Bank Accounts</h1>
 
             <div class='text-center my-4'>
-                <a href='' class='btn btn-lg btn-success'><i class="fas fa-plus-circle"></i> &nbsp; New</a>
+                <router-link to='/accounts/new' class='btn btn-lg btn-success'><i class="fas fa-plus-circle"></i> &nbsp; New</router-link>
             </div>
 
 
@@ -20,7 +20,9 @@
                 <tbody>
                     <tr v-for='(bankAccount, index) in bankAccounts' :key='index'>
                         <td>
-                            <a href='' class='btn btn-info text-white mr-2'><i class="fas fa-edit"></i></a>
+                            <router-link :to="'/accounts/edit/'+bankAccount.id" class='btn btn-info text-white mr-2'>
+                                <i class="fas fa-edit"></i>
+                            </router-link >
                             <a class='btn btn-danger text-white' @click='deleteBankAccount(bankAccount.id, index)'><i class="fas fa-trash-alt"></i></a>
                         </td>
                         <td>{{bankAccount.id}}</td>

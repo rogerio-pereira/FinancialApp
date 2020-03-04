@@ -12,15 +12,15 @@
                     <div class="collapse navbar-collapse" id="navbar" v-if='this.$store.state.PassportApiToken.token'>
                         <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
                             <li class="nav-item active">
-                                <router-link to='Accounts' class='nav-link'>Accounts</router-link>
+                                <router-link to='/accounts' class='nav-link'>Accounts</router-link>
                             </li>
 
                             <li class="nav-item">
-                                <router-link to='Categories' class='nav-link'>Categories</router-link>
+                                <router-link to='/categories' class='nav-link'>Categories</router-link>
                             </li>
 
                             <li class="nav-item">
-                                <router-link to='Transactions' class='nav-link'>Transactions</router-link>
+                                <router-link to='/transactions' class='nav-link'>Transactions</router-link>
                             </li>
 
                             <li class="nav-item">
