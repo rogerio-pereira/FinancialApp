@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call(UsersTableSeeder::class);
+        $this->call(CategoryTableSeeder::class);
         
         if(env('local') != 'production') {
             $this->call(BankAcountSeeder::class);

@@ -33,6 +33,32 @@ class CategoryTest extends TestCase
     /**
      * @test
      */
+    public function aUserCanGetAllCategoriesSortedByNameAsc()
+    {
+        $this->actingAs(factory(User::class)->create(), 'api');
+        
+        factory(Category::class)->create(['name' => 'Category B']);
+        factory(Category::class)->create(['name' => 'Category A']);
+
+        $response = $this->get('/api/categories');
+
+        $response->assertOk()
+            ->assertJsonCount(2)
+            ->assertJson([
+                [
+                    'id' => 2,
+                    'name' => 'Category A',
+                ],
+                [
+                    'id' => 1,
+                    'name' => 'Category B',
+                ]
+            ]);
+    }
+
+    /**
+     * @test
+     */
     public function aUserCanCreateACategory()
     {
         $this->actingAs(factory(User::class)->create(), 'api');
