@@ -35,7 +35,7 @@
             save(data) {
                 this.$http.put('bank-accounts/'+this.bankAccount.id, data)
                     .then(() => {
-                        this.$router.push({ name: 'accounts'})
+                        this.$router.push({ name: 'accounts.index'})
                     })
                     .catch(error => {
                         console.log('Error at saving\n'+error)

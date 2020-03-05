@@ -30,7 +30,7 @@
             save(data) {
                 this.$http.post('bank-accounts', data)
                     .then(() => {
-                        this.$router.push({ name: 'accounts'})
+                        this.$router.push({ name: 'accounts.index'})
                     })
                     .catch(error => {
                         console.log('Error at saving\n'+error)
