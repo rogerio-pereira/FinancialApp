@@ -2,7 +2,7 @@
     <div id="app">
         <menu-app />
 
-        <div class='row content my-3 mb-5'>
+        <div class='row content my-3 mb-5 contentContainer'>
             <div class='container'>
                 <transition enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp" mode='out-in'>
                     <router-view/>
@@ -30,11 +30,9 @@
         },
         created() {
             if(this.$store.state.PassportApiToken.token) {
-                console.log('ok')
                 this.$http.defaults.headers.common['Authorization'] = 'Bearer '+this.$store.state.PassportApiToken.token
             }
             else {
-                console.log('nao')
                 this.$router.push({ name: 'login'})
             }
         }
@@ -58,6 +56,10 @@
     h1 {
         font-size: 2.2em;
         font-weight: 700 !important;
+    }
+
+    div.contentContainer {
+        z-index: 0;
     }
 
     div.content{

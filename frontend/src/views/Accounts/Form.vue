@@ -19,18 +19,21 @@
 
 <script>
     export default {
-        data() {
+        props: {
+            bankAccount: {type: Object, required: true}
+        },
+        /*data() {
             return {
                 bankAccount: {
-                    id: '',
+                    id: null,
                     name: '',
                     initialBalance: 0
                 }
             }
-        },
+        },*/
         methods: {
             save(){
-                this.$emit('saveBankAccount', this.bankAccount)
+                this.$emit('saveBankAccount', {data: this.bankAccount})
             }
         }
     }

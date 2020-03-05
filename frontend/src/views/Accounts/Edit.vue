@@ -5,7 +5,7 @@
         </div>
 
         <div class='col-8 offset-2'>
-            <form-account />
+            <form-account :bankAccount='bankAccount' @saveBankAccount='save($event.data)'/>
         </div>
     </div>
 </template>
@@ -19,11 +19,28 @@
         },
         data() {
             return {
-
+                bankAccount: {}
             }
         },
+        created() {
+            this.$http.get('bank-accounts/'+this.$route.params.id)
+                .then(response => {
+                    this.bankAccount = response.data
+                })
+                .catch(error => {
+                    console.log('Error at fetching bankAccount\n'+error)
+                })
+        },
         methods: {
-
+            save(data) {
+                this.$http.put('bank-accounts/'+this.bankAccount.id, data)
+                    .then(() => {
+                        this.$router.push({ name: 'accounts'})
+                    })
+                    .catch(error => {
+                        console.log('Error at saving\n'+error)
+                    })
+            }
         }
     }
 </script>

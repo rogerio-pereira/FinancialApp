@@ -5,7 +5,7 @@
         </div>
 
         <div class='col-8 offset-2'>
-            <form-account />
+            <form-account :bankAccount='bankAccount' @saveBankAccount='save($event.data)'/>
         </div>
     </div>
 </template>
@@ -19,11 +19,23 @@
         },
         data() {
             return {
-
+                bankAccount: {
+                    id: null,
+                    name: '',
+                    initialBalance: 0
+                }
             }
         },
         methods: {
-
+            save(data) {
+                this.$http.post('bank-accounts', data)
+                    .then(() => {
+                        this.$router.push({ name: 'accounts'})
+                    })
+                    .catch(error => {
+                        console.log('Error at saving\n'+error)
+                    })
+            }
         }
     }
 </script>
