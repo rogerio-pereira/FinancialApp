@@ -14,24 +14,6 @@ class TransactionTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Transaction::class)->create([
-            'due_at' => Carbon::now()->startOfMonth()->subDay()
-        ]);
-        //First Day of Month (ID: 2)
-        factory(Transaction::class)->create([
-            'due_at' => Carbon::now()->startOfMonth()
-        ]);
-        //Today (ID: 3)
-        factory(Transaction::class)->create([
-            'due_at' => Carbon::now()
-        ]);
-        //FirstDayOfNextMonth (ID: 4)
-        factory(Transaction::class)->create([
-            'due_at' => Carbon::now()->endOfMonth()->addDay()
-        ]);
-        //LastDayOfMonth (ID: 5)
-        factory(Transaction::class)->create([
-            'due_at' => Carbon::now()->endOfMonth()
-        ]);
+        factory(Transaction::class, 50)->create();
     }
 }

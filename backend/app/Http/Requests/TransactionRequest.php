@@ -26,7 +26,7 @@ class TransactionRequest extends FormRequest
         return [
             'description' => 'required',
             'amount' => 'required|numeric',
-            'type' => 'required|in:Income,Expense',
+            'type' => 'required|in:Income,Expense,Transfer',
             'due_at' => 'required|date',
             'category_id' => 'required|numeric|exists:categories,id',
             'account_id' => 'required|numeric|exists:bank_accounts,id',
