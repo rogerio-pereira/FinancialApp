@@ -21,8 +21,8 @@ class CrudTest extends TestCase
     public function aUserCanGetAllTransactionsInCurrentMonth()
     {
         $this->actingAs(factory(User::class)->create(), 'api');
-        factory(Category::class)->create();
-        factory(BankAccount::class)->create();
+        $category = factory(Category::class)->create();
+        $account = factory(BankAccount::class)->create();
 
         //LastDayOfLastMonth (ID: 1)
         $lastMonth = factory(Transaction::class)->create([
@@ -59,6 +59,14 @@ class CrudTest extends TestCase
                     'category_id' => 1,
                     'account_id' => 1,
                     'payed' => false,
+                    'category' => [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                    ],
+                    'account' => [
+                        'id' => $account->id,
+                        'name' => $account->name,
+                    ],
                 ],
                 [
                     'id' => 3,
@@ -69,6 +77,14 @@ class CrudTest extends TestCase
                     'category_id' => 1,
                     'account_id' => 1,
                     'payed' => false,
+                    'category' => [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                    ],
+                    'account' => [
+                        'id' => $account->id,
+                        'name' => $account->name,
+                    ],
                 ],
                 [
                     'id' => 2,
@@ -79,6 +95,14 @@ class CrudTest extends TestCase
                     'category_id' => 1,
                     'account_id' => 1,
                     'payed' => false,
+                    'category' => [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                    ],
+                    'account' => [
+                        'id' => $account->id,
+                        'name' => $account->name,
+                    ],
                 ],
             ]);
     }
@@ -89,8 +113,8 @@ class CrudTest extends TestCase
     public function aUserCanGetAllTransactionsInLastMonth()
     {
         $this->actingAs(factory(User::class)->create(), 'api');
-        factory(Category::class)->create();
-        factory(BankAccount::class)->create();
+        $category = factory(Category::class)->create();
+        $account = factory(BankAccount::class)->create();
 
         //LastDayOfLastMonth (ID: 1)
         $lastMonth = factory(Transaction::class)->create([
@@ -127,6 +151,14 @@ class CrudTest extends TestCase
                     'category_id' => 1,
                     'account_id' => 1,
                     'payed' => false,
+                    'category' => [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                    ],
+                    'account' => [
+                        'id' => $account->id,
+                        'name' => $account->name,
+                    ],
                 ]
             ]);
     }
@@ -137,8 +169,8 @@ class CrudTest extends TestCase
     public function aUserCanGetAllTransactionsInNextMonth()
     {
         $this->actingAs(factory(User::class)->create(), 'api');
-        factory(Category::class)->create();
-        factory(BankAccount::class)->create();
+        $category = factory(Category::class)->create();
+        $account = factory(BankAccount::class)->create();
 
         //LastDayOfLastMonth (ID: 1)
         $lastMonth = factory(Transaction::class)->create([
@@ -175,6 +207,14 @@ class CrudTest extends TestCase
                     'category_id' => 1,
                     'account_id' => 1,
                     'payed' => false,
+                    'category' => [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                    ],
+                    'account' => [
+                        'id' => $account->id,
+                        'name' => $account->name,
+                    ],
                 ]
             ]);
     }

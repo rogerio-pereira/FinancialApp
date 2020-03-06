@@ -14,6 +14,11 @@ import CategoryList from '../views/Categories/List.vue'
 import CategoryNew from '../views/Categories/New.vue'
 import CategoryEdit from '../views/Categories/Edit.vue'
 
+import TransactionIndex from '../views/Transactions/Index.vue'
+import TransactionList from '../views/Transactions/List.vue'
+import TransactionNew from '../views/Transactions/New.vue'
+import TransactionEdit from '../views/Transactions/Edit.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -45,6 +50,16 @@ const routes = [
       {path: '', component: CategoryList, props: true, name: 'categories.index'},
       {path: 'new', component: CategoryNew, props: true, name: 'categories.new'},
       {path: 'edit/:id', component: CategoryEdit, props: true, name: 'categories.edit'},
+    ]
+  },
+  {
+    path: '/transactions',
+    name: 'transactions',
+    component: TransactionIndex,
+    children: [
+      {path: '', component: TransactionList, props: true, name: 'transactions.index'},
+      {path: 'new', component: TransactionNew, props: true, name: 'transactions.new'},
+      {path: 'edit/:id', component: TransactionEdit, props: true, name: 'transactions.edit'},
     ]
   },
 ]

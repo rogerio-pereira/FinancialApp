@@ -24,6 +24,7 @@ class Transaction extends Model
 
     protected $casts = [
         'due_at' => 'datetime:Y-m-d',
+        'amount' => 'decimal:2',
     ];
 
     public function category()

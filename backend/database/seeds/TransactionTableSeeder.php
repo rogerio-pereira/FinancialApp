@@ -15,5 +15,35 @@ class TransactionTableSeeder extends Seeder
     public function run()
     {
         factory(Transaction::class, 50)->create();
+        factory(Transaction::class)->create([
+            'type' => 'Income',
+            'due_at' => Carbon::now()->toDateString(),
+            'payed' => 0,
+        ]);
+        factory(Transaction::class)->create([
+            'type' => 'Income',
+            'due_at' => Carbon::now()->toDateString(),
+            'payed' => 1,
+        ]);
+        factory(Transaction::class)->create([
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->toDateString(),
+            'payed' => 0,
+        ]);
+        factory(Transaction::class)->create([
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->toDateString(),
+            'payed' => 1,
+        ]);
+        factory(Transaction::class)->create([
+            'type' => 'Transfer',
+            'due_at' => Carbon::now()->toDateString(),
+            'payed' => 0,
+        ]);
+        factory(Transaction::class)->create([
+            'type' => 'Transfer',
+            'due_at' => Carbon::now()->toDateString(),
+            'payed' => 1,
+        ]);
     }
 }

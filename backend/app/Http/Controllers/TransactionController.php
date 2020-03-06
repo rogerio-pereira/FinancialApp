@@ -22,6 +22,7 @@ class TransactionController extends Controller
         }
 
         return Transaction::whereMonth('due_at', $month)
+                    ->with(['category:id,name', 'account:id,name'])
                     ->whereYear('due_at', $year)
                     ->orderBy('due_at', 'desc')
                     ->get();
