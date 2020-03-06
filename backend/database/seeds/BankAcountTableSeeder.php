@@ -3,7 +3,7 @@
 use App\Model\BankAccount;
 use Illuminate\Database\Seeder;
 
-class BankAcountSeeder extends Seeder
+class BankAcountTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.

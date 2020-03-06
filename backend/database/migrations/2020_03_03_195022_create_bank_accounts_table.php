@@ -18,6 +18,7 @@ class CreateBankAccountsTable extends Migration
             $table->string('name');
             $table->decimal('initialBalance')->default('0');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
