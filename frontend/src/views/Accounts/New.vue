@@ -5,7 +5,7 @@
         </div>
 
         <div class='col-8 offset-2'>
-            <form-account :bankAccount='bankAccount' @saveBankAccount='save($event.data)'/>
+            <form-account :bankAccount='bankAccount' @save='save($event.data)'/>
         </div>
     </div>
 </template>

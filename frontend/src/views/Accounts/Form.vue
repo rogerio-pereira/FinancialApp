@@ -33,7 +33,7 @@
         },*/
         methods: {
             save(){
-                this.$emit('saveBankAccount', {data: this.bankAccount})
+                this.$emit('save', {data: this.bankAccount})
             }
         }
     }
