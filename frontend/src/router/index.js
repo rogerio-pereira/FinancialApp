@@ -9,6 +9,11 @@ import AccountList from '../views/Accounts/List.vue'
 import AccountNew from '../views/Accounts/New.vue'
 import AccountEdit from '../views/Accounts/Edit.vue'
 
+import CategoryIndex from '../views/Categories/Index.vue'
+import CategoryList from '../views/Categories/List.vue'
+import CategoryNew from '../views/Categories/New.vue'
+import CategoryEdit from '../views/Categories/Edit.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -30,6 +35,16 @@ const routes = [
       {path: '', component: AccountList, props: true, name: 'accounts.index'},
       {path: 'new', component: AccountNew, props: true, name: 'accounts.new'},
       {path: 'edit/:id', component: AccountEdit, props: true, name: 'accounts.edit'},
+    ]
+  },
+  {
+    path: '/categories',
+    name: 'categories',
+    component: CategoryIndex,
+    children: [
+      {path: '', component: CategoryList, props: true, name: 'categories.index'},
+      {path: 'new', component: CategoryNew, props: true, name: 'categories.new'},
+      {path: 'edit/:id', component: CategoryEdit, props: true, name: 'categories.edit'},
     ]
   },
 ]
