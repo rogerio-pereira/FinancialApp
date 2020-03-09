@@ -24,7 +24,8 @@ Route::get('/auth-user', 'ApiAuthController@AuthUser');
 Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('bank-accounts', 'BankAccountController');
     Route::resource('categories', 'CategoryController');
+
+    Route::put('transaction/{id}/pay', 'TransactionController@payTransaction');
+    Route::get('transactions/{month}/{year}', 'TransactionController@index');
+    Route::resource('transactions', 'TransactionController');
 });
-    
-Route::get('transactions/{month}/{year}', 'TransactionController@index');
-Route::resource('transactions', 'TransactionController');

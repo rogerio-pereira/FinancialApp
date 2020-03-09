@@ -225,12 +225,10 @@ class CrudTest extends TestCase
     public function aUserCanGetATransaction()
     {
         $this->actingAs(factory(User::class)->create(), 'api');
-        factory(Category::class,2)->create();
-        factory(BankAccount::class,2)->create();
+        factory(Category::class)->create();
+        factory(BankAccount::class)->create();
 
-        $transaction = factory(Transaction::class)->create([
-            'due_at' => Carbon::now()->startOfMonth()->subDay()
-        ]);
+        $transaction = factory(Transaction::class)->create();
 
         //POST/
         $request = $this->get('/api/transactions/1');
@@ -521,5 +519,48 @@ class CrudTest extends TestCase
             ->assertJsonCount(0);
 
         $this->assertDatabaseMissing('transactions', $transaction->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function AUserCanChangeTransactiontoPayed()
+    {
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class)->create();
+        factory(BankAccount::class)->create();
+        $transaction = factory(Transaction::class)->create();
+
+        //POST/
+        $response = $this->get('/api/transactions/1');
+        $response->assertOk()
+            ->assertJson([
+                'id' => 1,
+                'description' => $transaction->description,
+                'amount' => $transaction->amount,
+                'type' => $transaction->type,
+                'due_at' => $transaction->due_at->toDateString(),
+                'category_id' => $transaction->category_id,
+                'account_id' => $transaction->account_id,
+                'payed' => false,
+            ]);
+
+        //PUT
+        $request = $this->put('/api/transaction/1/pay', ['payed' => true]);
+        $request->assertOk();
+
+        
+        $response = $this->get('/api/transactions/1');
+        $response->assertOk()
+            ->assertJson([
+                'id' => 1,
+                'description' => $transaction->description,
+                'amount' => $transaction->amount,
+                'type' => $transaction->type,
+                'due_at' => $transaction->due_at->toDateString(),
+                'category_id' => $transaction->category_id,
+                'account_id' => $transaction->account_id,
+                'payed' => true,
+            ]);
     }
 }

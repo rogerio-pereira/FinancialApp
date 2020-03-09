@@ -6,6 +6,7 @@ use DateTime;
 use App\Model\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Requests\TransactionRequest;
+use App\Http\Requests\PayTransactionRequest;
 
 class TransactionController extends Controller
 {
@@ -103,5 +104,15 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         Transaction::find($id)->delete();
+    }
+
+    public function payTransaction(PayTransactionRequest $request, $id)
+    {
+        $data = $request->all();
+
+        $transaction = Transaction::find($id);
+        $transaction->update($data);
+
+        return $transaction;
     }
 }
