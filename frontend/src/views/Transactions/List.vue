@@ -88,7 +88,13 @@
             },
             pay(id, index) {
                 //POST PARA ALTERAR STATUS
-                this.transactions[index].payed = true
+                this.$http.put('/transaction/'+id+'/pay', {payed: true})
+                    .then(() => {
+                        this.transactions[index].payed = true
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    });
             }
         }
     }
