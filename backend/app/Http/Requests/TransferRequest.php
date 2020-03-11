@@ -30,7 +30,7 @@ class TransferRequest extends FormRequest
             'to' => 'required|numeric|exists:bank_accounts,id|different:from',
             'category_id' => 'required|numeric|exists:categories,id',
             'due_at' => 'required|date',
-            'amount' => 'required|numeric',
+            'amount' => 'required|numeric|min:1',
             'payed' => 'required|boolean',
         ];
     }

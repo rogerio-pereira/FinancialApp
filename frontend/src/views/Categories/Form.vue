@@ -5,7 +5,11 @@
         <div class="form-group col-md-12">
             <label for="name">Name</label>
             <input type="text" class="form-control" id="name" v-model='category.name'>
-            <div class='text-danger' v-if='errors.name'><small>{{errors.name[0]}}</small></div>
+            <div class='text-danger' v-if='errors.name'>
+                <small>
+                    <p v-for='(error, index) in errors.name' :key='index'>{{error}}</p>
+                </small>
+            </div>
         </div>
 
         <div class='form-group text-center col-md-12'>

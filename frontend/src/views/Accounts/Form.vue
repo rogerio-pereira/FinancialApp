@@ -5,13 +5,21 @@
         <div class="form-group col-md-6">
             <label for="name">Name</label>
             <input type="text" class="form-control" id="name" v-model='bankAccount.name'>
-            <div class='text-danger' v-if='errors.name'><small>{{errors.name[0]}}</small></div>
+            <div class='text-danger' v-if='errors.name'>
+                <small>
+                    <p v-for='(error, index) in errors.name' :key='index'>{{error}}</p>
+                </small>
+            </div>
         </div>
         <div class="form-group col-md-6">
             <label for="initialBalance">Initial Balance</label>
             <!-- <input type="number" class="form-control" id="initialBalance" v-model='bankAccount.initialBalance'> -->
             <input type="text" class="form-control" id="initialBalance" v-model='bankAccount.initialBalance'>
-            <div class='text-danger' v-if='errors.initialBalance'><small>{{errors.initialBalance[0]}}</small></div>
+            <div class='text-danger' v-if='errors.initialBalance'>
+                <small>
+                    <p v-for='(error, index) in errors.initialBalance' :key='index'>{{error}}</p>
+                </small>
+            </div>
         </div>
 
         <div class='form-group text-center col-md-12'>

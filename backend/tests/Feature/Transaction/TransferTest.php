@@ -368,6 +368,36 @@ class TransferTest extends TestCase
     /**
      * @test
      */
+    public function aUserCantCreateATransacationWithAmountBellowZero()
+    {
+        factory(Category::class)->create();
+        $account1 = factory(BankAccount::class)->create();
+        $account2 = factory(BankAccount::class)->create();
+        $this->actingAs(factory(User::class)->create(), 'api');
+        $data = [
+            'from' => 1,
+            'to' => 2,
+            'category_id' => 1,
+            'due_at' => Carbon::now()->toDateString(),
+            'amount' => 0,
+            'payed' => true
+        ];
+
+        $request = $this->post('/api/transactions/new/transfer', $data);
+
+        $request->assertStatus(422)
+            ->assertJson([ 
+                'errors' => [
+                    'amount' => [
+                        'The amount must be at least 1.',
+                    ],
+                ]
+            ]);
+    }
+
+    /**
+     * @test
+     */
     public function aUserCantCreateATransacationWithWrongPayed()
     {
         factory(Category::class)->create();
