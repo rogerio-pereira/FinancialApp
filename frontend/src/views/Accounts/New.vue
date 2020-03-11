@@ -5,7 +5,7 @@
         </div>
 
         <div class='col-8 offset-2'>
-            <form-account :bankAccount='bankAccount' @save='save($event.data)'/>
+            <form-account :bankAccount='bankAccount' :errors='errors' @save='save($event.data)'/>
         </div>
     </div>
 </template>
@@ -23,7 +23,8 @@
                     id: null,
                     name: '',
                     initialBalance: 0
-                }
+                },
+                errors: {}
             }
         },
         methods: {
@@ -33,7 +34,7 @@
                         this.$router.push({ name: 'accounts.index'})
                     })
                     .catch(error => {
-                        console.log('Error at saving\n'+error)
+                        this.errors = error.response.data.errors
                     })
             }
         }

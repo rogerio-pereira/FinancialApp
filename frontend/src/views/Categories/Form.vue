@@ -5,6 +5,7 @@
         <div class="form-group col-md-12">
             <label for="name">Name</label>
             <input type="text" class="form-control" id="name" v-model='category.name'>
+            <div class='text-danger' v-if='errors.name'><small>{{errors.name[0]}}</small></div>
         </div>
 
         <div class='form-group text-center col-md-12'>
@@ -16,7 +17,8 @@
 <script>
     export default {
         props: {
-            category: {type: Object, required: true}
+            category: {type: Object, required: true},
+            errors: {type: Object, required:false}
         },
         /*data() {
             return {

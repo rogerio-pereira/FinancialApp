@@ -108,8 +108,14 @@ class CategoryTest extends TestCase
         //POST
         $request = $this->post('/api/categories', $category);
 
-        $request->assertStatus(302)
-            ->assertSessionHasErrors('name');
+        $request->assertStatus(422)
+            ->assertJson([ 
+                'errors' => [
+                    'name' => [
+                        'The name field is required.'
+                    ]
+                ]
+            ]);
     }
 
     /**

@@ -88,8 +88,14 @@ class BankAccountTest extends TestCase
         //POST
         $request = $this->post('/api/bank-accounts', $bankAccount);
 
-        $request->assertStatus(302)
-            ->assertSessionHasErrors('name');
+        $request->assertStatus(422)
+            ->assertJson([ 
+                'errors' => [
+                    'name' => [
+                        'The name field is required.'
+                    ]
+                ]
+            ]);
     }
 
     /**
@@ -106,8 +112,14 @@ class BankAccountTest extends TestCase
         //POST
         $request = $this->post('/api/bank-accounts', $bankAccount);
 
-        $request->assertStatus(302)
-            ->assertSessionHasErrors('initialBalance');
+        $request->assertStatus(422)
+        ->assertJson([ 
+            'errors' => [
+                'initialBalance' => [
+                    'The initial balance must be a number.'
+                ]
+            ]
+        ]);
     }
 
     /**
@@ -176,5 +188,33 @@ class BankAccountTest extends TestCase
 
         $response->assertOk()
             ->assertJsonCount(0);
+    }
+
+    /**
+     * @test
+     */
+    public function BankAccountsCanBeConvertedIdNameArray()
+    {
+        $this->actingAs(factory(User::class)->create(), 'api');
+
+        factory(BankAccount::class)->create(['name' => 'Account B']);
+        factory(BankAccount::class)->create(['name' => 'Account A']);
+
+        //GET
+        $response = $this->get('/api/bank-accounts/combobox');
+
+
+        $response->assertOk()
+            ->assertJsonCount(2)
+            ->assertJson([
+                [
+                    'id' => 2,
+                    'name' => 'Account A',
+                ],
+                [
+                    'id' => 1,
+                    'name' => 'Account B',
+                ],
+            ]);
     }
 }

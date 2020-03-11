@@ -5,7 +5,7 @@
         </div>
 
         <div class='col-8 offset-2'>
-            <form-category :category='category' @save='save($event.data)'/>
+            <form-category :category='category' :errors='errors' @save='save($event.data)'/>
         </div>
     </div>
 </template>
@@ -22,7 +22,8 @@
                 category: {
                     id: null,
                     name: '',
-                }
+                },
+                errors: {}
             }
         },
         methods: {
@@ -32,7 +33,8 @@
                         this.$router.push({ name: 'categories.index'})
                     })
                     .catch(error => {
-                        console.log('Error at saving\n'+error)
+                        console.log(error.response)
+                        this.errors = error.response.data.errors
                     })
             }
         }
