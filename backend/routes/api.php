@@ -24,6 +24,8 @@ Route::get('/auth-user', 'ApiAuthController@AuthUser');
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('bank-accounts/combobox', 'BankAccountController@getComboBox');
     Route::resource('bank-accounts', 'BankAccountController');
+
+    Route::get('categories/combobox', 'CategoryController@getComboBox');
     Route::resource('categories', 'CategoryController');
 
     Route::put('transaction/{id}/pay', 'TransactionController@payTransaction');

@@ -92,4 +92,10 @@ class CategoryController extends Controller
     {
         Category::find($id)->delete();
     }
+
+    public function getComboBox()
+    {
+        return Category::orderBy('name', 'asc')
+                    ->get(['id', 'name']);
+    }
 }

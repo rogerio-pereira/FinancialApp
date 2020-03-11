@@ -159,4 +159,30 @@ class CategoryTest extends TestCase
         $response->assertOk()
             ->assertJsonCount(0);
     }
+
+    /**
+     * @test
+     */
+    public function CategoriesCanBeConvertedIdNameArray()
+    {
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class)->create(['name' => 'Category B']);
+        factory(Category::class)->create(['name' => 'Category A']);
+
+        //GET
+        $response = $this->get('/api/categories/combobox');
+
+        $response->assertOk()
+            ->assertJsonCount(2)
+            ->assertJson([
+                [
+                    'id' => 2,
+                    'name' => 'Category A',
+                ],
+                [
+                    'id' => 1,
+                    'name' => 'Category B',
+                ],
+            ]);
+    }
 }
