@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use DateTime;
 use App\Model\Transaction;
 use Illuminate\Http\Request;
+use App\Http\Requests\TransferRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Requests\PayTransactionRequest;
+use App\Model\BankAccount;
 
 class TransactionController extends Controller
 {
@@ -114,5 +116,33 @@ class TransactionController extends Controller
         $transaction->update($data);
 
         return $transaction;
+    }
+
+    public function transfer(TransferRequest $request) {
+        $data = $request->all();
+        $from = BankAccount::find($data['from']);
+        $to = BankAccount::find($data['to']);
+
+        $transaction1 = Transaction::create([
+            'description' => 'Transfer from '.$from->name.' to '.$to->name,
+            'amount' => $data['amount'],
+            'type' => 'Transfer',
+            'due_at' => $data['due_at'],
+            'category_id' => $data['category_id'],
+            'account_id' => $data['from'],
+            'payed' => $data['payed'],
+        ]);
+        $transaction2 = Transaction::create([
+            'description' => 'Transfer from '.$from->name.' to '.$to->name,
+            'amount' => $data['amount'],
+            'type' => 'Transfer',
+            'due_at' => $data['due_at'],
+            'category_id' => $data['category_id'],
+            'account_id' => $data['to'],
+            'payed' => $data['payed'],
+        ]);
+
+        $returnData = [$transaction1, $transaction2];
+        return response()->json($returnData, 201);
     }
 }

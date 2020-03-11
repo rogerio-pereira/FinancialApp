@@ -18,6 +18,7 @@ import TransactionIndex from '../views/Transactions/Index.vue'
 import TransactionList from '../views/Transactions/List.vue'
 import TransactionNew from '../views/Transactions/New.vue'
 import TransactionEdit from '../views/Transactions/Edit.vue'
+import TransferForm from '../views/Transactions/TransferForm.vue'
 
 Vue.use(VueRouter)
 
@@ -60,6 +61,7 @@ const routes = [
       {path: '', component: TransactionList, props: true, name: 'transactions.index'},
       {path: 'new', component: TransactionNew, props: true, name: 'transactions.new'},
       {path: 'edit/:id', component: TransactionEdit, props: true, name: 'transactions.edit'},
+      {path: 'new-transfer', component: TransferForm, props: true, name: 'transactions.new.transfer'},
     ]
   },
 ]

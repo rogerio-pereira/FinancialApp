@@ -22,10 +22,12 @@ Route::post('/logout', 'ApiAuthController@logout');
 Route::get('/auth-user', 'ApiAuthController@AuthUser');
 
 Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('bank-accounts/combobox', 'BankAccountController@getComboBox');
     Route::resource('bank-accounts', 'BankAccountController');
     Route::resource('categories', 'CategoryController');
 
     Route::put('transaction/{id}/pay', 'TransactionController@payTransaction');
     Route::get('transactions/{month}/{year}', 'TransactionController@index');
+    Route::post('transactions/new/transfer', 'TransactionController@transfer');
     Route::resource('transactions', 'TransactionController');
 });

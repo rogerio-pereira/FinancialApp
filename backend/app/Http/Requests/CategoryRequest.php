@@ -41,7 +41,6 @@ class CategoryRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         $errors = $validator->errors();
-        throw new HttpResponseException(response()->json(['errors' => $errors
-        ], 422));
+        throw new HttpResponseException(response()->json(['errors' => $errors], 422));
     }
 }

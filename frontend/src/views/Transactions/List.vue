@@ -11,7 +11,7 @@
                     <i class="fas fa-long-arrow-alt-down"></i> &nbsp; Expense
                 </router-link>
 
-                <router-link to='/transactions/new' class='btn btn-lg btn-info ml-2'>
+                <router-link to='/transactions/new-transfer' class='btn btn-lg btn-info ml-2'>
                     <i class="fas fa-exchange-alt"></i> &nbsp; Transfer
                 </router-link>
             </div>

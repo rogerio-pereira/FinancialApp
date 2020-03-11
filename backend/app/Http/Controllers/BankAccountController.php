@@ -92,4 +92,10 @@ class BankAccountController extends Controller
     {
         BankAccount::find($id)->delete();
     }
+
+    public function getComboBox()
+    {
+        return BankAccount::orderBy('name', 'asc')
+                    ->get(['id', 'name']);
+    }
 }
