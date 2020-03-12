@@ -65,8 +65,8 @@
         <div class="form-group col-md-6">
             <label for="payed">Payed</label>
             <select id='payed' v-model='transfer.payed' class='form-control'>
-                <option value='false'>No</option>
-                <option value='true'>Yes</option>
+                <option value='0'>No</option>
+                <option value='1'>Yes</option>
             </select>
             <div class='text-danger' v-if='errors.payed'>
                 <small>

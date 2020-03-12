@@ -36,14 +36,20 @@ class TransactionTableSeeder extends Seeder
             'payed' => 1,
         ]);
         factory(Transaction::class)->create([
-            'type' => 'Transfer',
-            'due_at' => Carbon::now()->toDateString(),
-            'payed' => 0,
-        ]);
-        factory(Transaction::class)->create([
-            'type' => 'Transfer',
+            'type' => 'Expense',
+            'is_transfer' => true,
+            'amount' => 50,
             'due_at' => Carbon::now()->toDateString(),
             'payed' => 1,
+            'first_transaction' => 55
+        ]);
+        factory(Transaction::class)->create([
+            'type' => 'Income',
+            'is_transfer' => true,
+            'amount' => 50,
+            'due_at' => Carbon::now()->toDateString(),
+            'payed' => 1,
+            'first_transaction' => 55
         ]);
     }
 }

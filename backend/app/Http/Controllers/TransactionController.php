@@ -126,20 +126,26 @@ class TransactionController extends Controller
         $transaction1 = Transaction::create([
             'description' => 'Transfer from '.$from->name.' to '.$to->name,
             'amount' => $data['amount'],
-            'type' => 'Transfer',
+            'type' => 'Expense',
+            'is_transfer' => true,
             'due_at' => $data['due_at'],
             'category_id' => $data['category_id'],
             'account_id' => $data['from'],
             'payed' => $data['payed'],
         ]);
+        $transaction1->first_transaction = $transaction1->id;
+        $transaction1->save();
+
         $transaction2 = Transaction::create([
             'description' => 'Transfer from '.$from->name.' to '.$to->name,
             'amount' => $data['amount'],
-            'type' => 'Transfer',
+            'type' => 'Income',
+            'is_transfer' => true,
             'due_at' => $data['due_at'],
             'category_id' => $data['category_id'],
             'account_id' => $data['to'],
             'payed' => $data['payed'],
+            'first_transaction' => $transaction1->id,
         ]);
 
         $returnData = [$transaction1, $transaction2];

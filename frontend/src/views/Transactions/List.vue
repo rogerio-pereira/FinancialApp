@@ -31,7 +31,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for='(transaction, index) in transactions' :key='index' :class='transaction.type.toLowerCase()'>
+                    <tr 
+                        v-for='(transaction, index) in transactions' 
+                        :key='index' 
+                        :class="(transaction.is_transfer == true) ? 'transfer' : transaction.type.toLowerCase()"
+                    >
                         <td>
                             <router-link :to="'/transactions/edit/'+transaction.id" class='btn btn-info text-white mr-2'>
                                 <i class="fas fa-edit"></i>

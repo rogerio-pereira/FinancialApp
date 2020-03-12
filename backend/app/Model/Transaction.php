@@ -10,9 +10,11 @@ class Transaction extends Model
         'description',
         'amount',
         'type',
+        'is_transfer',
         'due_at',
         'category_id',
         'account_id',
+        'first_transaction',
         'payed',
     ];
 
@@ -35,5 +37,10 @@ class Transaction extends Model
     public function Account()
     {
         return $this->belongsTo(BankAccount::class);
+    }
+
+    public function firstTransaction()
+    {
+        return $this->belongsTo(Transaction::class, 'first_transaction');
     }
 }

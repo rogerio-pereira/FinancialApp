@@ -18,9 +18,11 @@ class CreateTransactionsTable extends Migration
             $table->string('description');
             $table->decimal('amount');
             $table->string('type')->default('Expense');
+            $table->boolean('is_transfer')->default(false);
             $table->date('due_at');
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('account_id');
+            $table->unsignedBigInteger('first_transaction')->nullable();
             $table->boolean('payed')->default(false);
             $table->timestamps();
 
@@ -31,6 +33,10 @@ class CreateTransactionsTable extends Migration
             $table->foreign('account_id')
                 ->references('id')
                 ->on('bank_accounts');
+
+            $table->foreign('first_transaction')
+                ->references('id')
+                ->on('transactions');
         });
     }
 
