@@ -9,6 +9,8 @@ use App\Http\Requests\TransferRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Requests\PayTransactionRequest;
 use App\Model\BankAccount;
+use App\Model\Useful\DateConversion;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -51,10 +53,33 @@ class TransactionController extends Controller
     {
         $data = $request->all();
         $data['due_at'] = date('Y-m-d', strtotime($data['due_at']));
+        $transactions = [];
 
         $transaction = Transaction::create($data);
 
-        return $transaction;
+        if(!isset($data['repeat']) || $data['repeat'] == false)
+            return $transaction;
+        else {
+            $firstTransactionId = $transaction->id;
+
+            $transaction->first_transaction = $firstTransactionId;
+            $transaction->save();
+            $transactions[] = $transaction;
+
+            $data['first_transaction'] = $firstTransactionId;
+            $data['payed'] = false;
+            $date = Carbon::createFromFormat('Y-m-d', $data['due_at'])->format('Y-m-d');
+
+            for($i=1; $i<$data['repeatTimes']; $i++) {
+                $date = DateConversion::newDateByPeriod($date, $data['period'])->toDateString();
+                $data['due_at'] = $date;
+
+                $transaction = Transaction::create($data);
+                $transactions[] = $transaction;
+            }
+
+            return response()->json($transactions, 201);
+        }
     }
 
     /**
