@@ -1,38 +1,48 @@
 <template>
     <div class='card'>
         <div class="card-header">
-            <strong>New Category</strong>
+            <strong>New {{type}}</strong>
         </div>
 
         <div class='col-8 offset-2'>
-            <form-category :category='category' @save='save($event.data)'/>
+            <form-transaction :transaction='transaction' :errors='errors' @save='save($event.data)'/>
         </div>
     </div>
 </template>
 
 <script>
-    import FormCategory from './Form'
+    import FormTransaction from './Form'
 
     export default {
         components: {
-            FormCategory
+            FormTransaction
         },
+        props: [
+            'type'
+        ],
         data() {
             return {
-                category: {
-                    id: null,
-                    name: '',
-                }
+                transaction: {
+                    description: null,
+                    amount: null,
+                    type: this.type.charAt(0).toUpperCase() + this.type.slice(1),
+                    due_at: null,
+                    category_id: null,
+                    account_id: null,
+                    payed: null,
+                },
+                errors: {}
             }
         },
         methods: {
             save(data) {
-                this.$http.post('categories', data)
+                this.$http.post('transactions', data)
                     .then(() => {
-                        this.$router.push({ name: 'categories.index'})
+                        this.$router.push({ name: 'transactions.index'})
                     })
                     .catch(error => {
                         console.log('Error at saving\n'+error)
+                        this.errors = error.response.data.errors
                     })
             }
         }
@@ -40,5 +50,8 @@
 </script>
 
 <style scoped>
-
+    .card-header
+    {
+        text-transform: capitalize;
+    }
 </style>

@@ -3,11 +3,11 @@
         <h1 class='text-center'>Transactions</h1>
 
             <div class='text-center my-4'>
-                <router-link to='/transactions/new' class='btn btn-lg btn-success'>
+                <router-link to='/transactions/new/income' class='btn btn-lg btn-success'>
                     <i class="fas fa-long-arrow-alt-up"></i> &nbsp; Income
                 </router-link>
 
-                <router-link to='/transactions/new' class='btn btn-lg btn-danger ml-2'>
+                <router-link to='/transactions/new/expense' class='btn btn-lg btn-danger ml-2'>
                     <i class="fas fa-long-arrow-alt-down"></i> &nbsp; Expense
                 </router-link>
 
