@@ -407,7 +407,14 @@ class CrudTest extends TestCase
         //POST
         $request = $this->post('/api/transactions', $transaction);
 
-        $request->assertStatus(302);
+        $request->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'type' => [
+                        'The selected type is invalid.'
+                    ],
+                ]
+            ]);
 
         $this->assertDatabaseMissing('transactions', $transaction);
     }
@@ -418,13 +425,13 @@ class CrudTest extends TestCase
     public function aUserCantCreateAnTransactionWithWrongCategory()
     {
         $this->actingAs(factory(User::class)->create(), 'api');
-        factory(Category::class)->create();
+        //factory(Category::class)->create();
         factory(BankAccount::class)->create();
 
         $transaction = [
             'description' => 'Transaction',
             'amount' => 50,
-            'type' => 'Test',
+            'type' => 'Income',
             'due_at' => Carbon::now()->toDateString(),
             'category_id' => 1,
             'account_id' => 1,
@@ -434,7 +441,14 @@ class CrudTest extends TestCase
         //POST
         $request = $this->post('/api/transactions', $transaction);
 
-        $request->assertStatus(302);
+        $request->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'category_id' => [
+                        'The selected category id is invalid.'
+                    ],
+                ]
+            ]);
 
         $this->assertDatabaseMissing('transactions', $transaction);
     }
@@ -451,7 +465,7 @@ class CrudTest extends TestCase
         $transaction = [
             'description' => 'Transaction',
             'amount' => 50,
-            'type' => 'Test',
+            'type' => 'Income',
             'due_at' => Carbon::now()->toDateString(),
             'category_id' => 1,
             'account_id' => 2,
@@ -461,7 +475,14 @@ class CrudTest extends TestCase
         //POST
         $request = $this->post('/api/transactions', $transaction);
 
-        $request->assertStatus(302);
+        $request->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'account_id' => [
+                        'The selected account id is invalid.'
+                    ],
+                ]
+            ]);
 
         $this->assertDatabaseMissing('transactions', $transaction);
     }

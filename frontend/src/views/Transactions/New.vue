@@ -29,7 +29,11 @@
                     due_at: null,
                     category_id: null,
                     account_id: null,
-                    payed: null,
+                    payed: false,
+
+                    repeat: false,
+                    repeatTimes: 2,
+                    period: 'Monthly',
                 },
                 errors: {}
             }
