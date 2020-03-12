@@ -128,9 +128,20 @@ class TransactionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, $transactionCount = null)
     {
-        Transaction::find($id)->delete();
+        if(!isset($transactionCount) || $transactionCount == 'this')
+            Transaction::find($id)->delete();
+        else if($transactionCount == 'all'){
+            $transaction = Transaction::find($id);
+
+            Transaction::where('first_transaction', $transaction->first_transaction)->delete();
+        }
+        else if($transactionCount == 'next') {
+            $transaction = Transaction::find($id);
+
+            Transaction::where('due_at', '>=', $transaction->due_at)->delete();
+        }
     }
 
     public function payTransaction(PayTransactionRequest $request, $id)
