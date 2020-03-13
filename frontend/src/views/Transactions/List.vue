@@ -117,7 +117,35 @@
                 $('#modalDelete').modal('hide')
                 
                 //Delete Transactions
-                console.log('Delete: '+transactionCount+' - '+id+' - '+index);
+                this.$http.delete('transactions/'+id+'/'+transactionCount)
+                    .then(() => {
+                        let firstTransactionId = this.transactions[index].first_transaction
+
+                        //Delete only the item
+                        if(transactionCount == 'this')
+                            this.transactions.splice(index, 1);
+                        //Delete all items
+                        else if(transactionCount == 'all') {
+                            for(let i=0; i<this.transactions.length; i++) {
+                                if(this.transactions[i].first_transaction == firstTransactionId)
+                                    this.transactions.splice(i, 1);
+                            }
+                        }
+                        //Delete items with the same first_transaction and with id >= deleted id
+                        else if(transactionCount == 'next') {
+                            for(let i=0; i<this.transactions.length; i++) {
+                                if(
+                                    this.transactions[i].first_transaction == firstTransactionId && 
+                                    this.transactions[i].id >= id
+                                ) {
+                                    this.transactions.splice(i, 1);
+                                }
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    });
             },
             pay(id, index) {
                 //POST PARA ALTERAR STATUS
