@@ -613,7 +613,6 @@ class RepeatedTransactionsTest extends TestCase
      */
     public function aUserCanDeleteOnlyOneRepeatedTransaction()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs(factory(User::class)->create(), 'api');
         factory(Category::class)->create();
         factory(BankAccount::class)->create();
@@ -853,7 +852,6 @@ class RepeatedTransactionsTest extends TestCase
      */
     public function aUserCanDeleteFirstRepeatedTransactions()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs(factory(User::class)->create(), 'api');
         factory(Category::class)->create();
         factory(BankAccount::class)->create();
@@ -944,7 +942,6 @@ class RepeatedTransactionsTest extends TestCase
      */
     public function aUserCanUpdateOnlyOneRepeatedTransaction()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs(factory(User::class)->create(), 'api');
         factory(Category::class, 2)->create();
         factory(BankAccount::class, 2)->create();
@@ -1055,7 +1052,6 @@ class RepeatedTransactionsTest extends TestCase
      */
     public function aUserCanUpdateThisAndNextRepeatedTransaction()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs(factory(User::class)->create(), 'api');
         factory(Category::class, 2)->create();
         factory(BankAccount::class, 2)->create();
@@ -1166,7 +1162,6 @@ class RepeatedTransactionsTest extends TestCase
      */
     public function aUserCanUpdateAllRepeatedTransaction()
     {
-        $this->withoutExceptionHandling();
         $this->actingAs(factory(User::class)->create(), 'api');
         factory(Category::class, 2)->create();
         factory(BankAccount::class, 2)->create();
