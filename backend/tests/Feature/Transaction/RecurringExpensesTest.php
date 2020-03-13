@@ -330,4 +330,490 @@ class RecurringExpensesTest extends TestCase
             'period' => 'Semiannually'
         ]);
     }
+
+    /**
+     * @test
+     */
+    public function aUserCanUpdateASingleRecurringTransactionWithoutUpdatingTheRecurringModel()
+    {
+        $this->withoutExceptionHandling();
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class, 2)->create();
+        factory(BankAccount::class, 2)->create();
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->startOfMonth(),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->startOfMonth()->addDay(14),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->startOfMonth()->addDay(30),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(RecurringTransaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => Carbon::now()->startOfMonth()->addDay(30),
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Biweekly'
+        ]);
+
+        $response = $this->get('/api/transactions');
+        $response->assertOk()
+            ->assertJsonCount(3)
+            ->assertJson([
+                [
+                    'id' => 3,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(30)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 2,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(14)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 1,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => Carbon::now()->startOfMonth()->addDay(30)->toDateString().' 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Biweekly'
+        ]);
+
+        $data = [
+            'description' => 'Transaction Update',
+            'amount' => 100,
+            'type' => 'Income',
+            'category_id' => 2,
+            'account_id' => 2,
+            'repeatCount' => 'this'
+        ];
+
+        $request = $this->put('/api/transactions/2', $data);
+        $request->assertOk();
+
+        $response = $this->get('/api/transactions');
+        $response->assertOk()
+            ->assertJsonCount(3)
+            ->assertJson([
+                [
+                    'id' => 3,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(30)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 2,
+                    'description' => 'Transaction Update',
+                    'amount' => 100,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(14)->toDateString(),
+                    'category_id' => 2,
+                    'account_id' => 2,
+                    'payed' => false,
+                    'first_transaction' => 1
+                ],
+                [
+                    'id' => 1,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => Carbon::now()->startOfMonth()->addDay(30)->toDateString().' 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Biweekly'
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function aUserCanUpdateThisAndNextRecurringTransactionsUpdatingTheRecurringModel()
+    {
+        $this->withoutExceptionHandling();
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class, 2)->create();
+        factory(BankAccount::class, 2)->create();
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->startOfMonth(),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->startOfMonth()->addDay(14),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->startOfMonth()->addDay(30),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(RecurringTransaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => Carbon::now()->startOfMonth()->addDay(30),
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Biweekly'
+        ]);
+
+        $response = $this->get('/api/transactions');
+        $response->assertOk()
+            ->assertJsonCount(3)
+            ->assertJson([
+                [
+                    'id' => 3,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(30)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 2,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(14)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 1,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => Carbon::now()->startOfMonth()->addDay(30)->toDateString().' 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Biweekly'
+        ]);
+
+        $data = [
+            'description' => 'Transaction Update',
+            'amount' => 100,
+            'type' => 'Income',
+            'category_id' => 2,
+            'account_id' => 2,
+            'repeatCount' => 'next'
+        ];
+
+        $request = $this->put('/api/transactions/2', $data);
+        $request->assertOk();
+
+        $response = $this->get('/api/transactions');
+        $response->assertOk()
+            ->assertJsonCount(3)
+            ->assertJson([
+                [
+                    'id' => 3,
+                    'description' => 'Transaction Update',
+                    'amount' => 100,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(30)->toDateString(),
+                    'category_id' => 2,
+                    'account_id' => 2,
+                    'payed' => false,
+                    'first_transaction' => 1
+                ],
+                [
+                    'id' => 2,
+                    'description' => 'Transaction Update',
+                    'amount' => 100,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(14)->toDateString(),
+                    'category_id' => 2,
+                    'account_id' => 2,
+                    'payed' => false,
+                    'first_transaction' => 1
+                ],
+                [
+                    'id' => 1,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction Update',
+            'amount' => 100,
+            'type' => 'Income',
+            'last_date' => Carbon::now()->startOfMonth()->addDay(30)->toDateString().' 00:00:00',
+            'category_id' => 2,
+            'account_id' => 2,
+            'first_transaction' => 1,
+            'period' => 'Biweekly'
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function aUserCanUpdateAllRecurringTransactionsUpdatingTheRecurringModel()
+    {
+        $this->withoutExceptionHandling();
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class, 2)->create();
+        factory(BankAccount::class, 2)->create();
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->startOfMonth(),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->startOfMonth()->addDay(14),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->startOfMonth()->addDay(30),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(RecurringTransaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => Carbon::now()->startOfMonth()->addDay(30),
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Biweekly'
+        ]);
+
+        $response = $this->get('/api/transactions');
+        $response->assertOk()
+            ->assertJsonCount(3)
+            ->assertJson([
+                [
+                    'id' => 3,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(30)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 2,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(14)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 1,
+                    'description' => 'Transaction',
+                    'amount' => 50,
+                    'type' => 'Expense',
+                    'due_at' => Carbon::now()->startOfMonth()->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => Carbon::now()->startOfMonth()->addDay(30)->toDateString().' 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Biweekly'
+        ]);
+
+        $data = [
+            'description' => 'Transaction Update',
+            'amount' => 100,
+            'type' => 'Income',
+            'category_id' => 2,
+            'account_id' => 2,
+            'repeatCount' => 'all'
+        ];
+
+        $request = $this->put('/api/transactions/2', $data);
+        $request->assertOk();
+
+        $response = $this->get('/api/transactions');
+        $response->assertOk()
+            ->assertJsonCount(3)
+            ->assertJson([
+                [
+                    'id' => 3,
+                    'description' => 'Transaction Update',
+                    'amount' => 100,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(30)->toDateString(),
+                    'category_id' => 2,
+                    'account_id' => 2,
+                    'payed' => false,
+                    'first_transaction' => 1
+                ],
+                [
+                    'id' => 2,
+                    'description' => 'Transaction Update',
+                    'amount' => 100,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->startOfMonth()->addDay(14)->toDateString(),
+                    'category_id' => 2,
+                    'account_id' => 2,
+                    'payed' => false,
+                    'first_transaction' => 1
+                ],
+                [
+                    'id' => 1,
+                    'description' => 'Transaction Update',
+                    'amount' => 100,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->startOfMonth()->toDateString(),
+                    'category_id' => 2,
+                    'account_id' => 2,
+                    'payed' => false,
+                    'first_transaction' => 1
+                ],
+            ]);
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction Update',
+            'amount' => 100,
+            'type' => 'Income',
+            'last_date' => Carbon::now()->startOfMonth()->addDay(30)->toDateString().' 00:00:00',
+            'category_id' => 2,
+            'account_id' => 2,
+            'first_transaction' => 1,
+            'period' => 'Biweekly'
+        ]);
+    }
 }

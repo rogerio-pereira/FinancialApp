@@ -149,7 +149,7 @@ class TransactionController extends Controller
         $data = $request->all();
 
         $transaction = Transaction::find($id);
-        if(!isset($transaction->first_transaction) || $data['repeatCount'] == 'this') {
+        if(!isset($transaction->first_transaction) || (isset($data['repeatCount']) && $data['repeatCount'] == 'this')) {
             $transaction->update($data);
 
             return $transaction;
@@ -157,16 +157,21 @@ class TransactionController extends Controller
         else {
             $transactions = [];
 
-            if($data['repeatCount'] == 'all')
-                $transactions = Transaction::where('first_transaction', $transaction->first_transaction)->get();
-            else if($data['repeatCount'] == 'next')
-                $transactions = Transaction::where('first_transaction', $transaction->first_transaction)
-                                    ->where('due_at', '>=', $transaction->due_at)
-                                    ->get();
-            
-            foreach($transactions as $t) {
-                $data['due_at'] = $t->due_at->toDateString();
-                $t->update($data);
+                if($data['repeatCount'] == 'all')
+                    $transactions = Transaction::where('first_transaction', $transaction->first_transaction)->get();
+                else if($data['repeatCount'] == 'next')
+                    $transactions = Transaction::where('first_transaction', $transaction->first_transaction)
+                                        ->where('due_at', '>=', $transaction->due_at)
+                                        ->get();
+                
+                foreach($transactions as $t) {
+                    $data['due_at'] = $t->due_at->toDateString();
+                    $t->update($data);
+                }
+
+            if($transaction->is_recurring == true) {
+                $recurring = RecurringTransaction::where('first_transaction', $transaction->first_transaction)->get()->first();
+                $recurring->update($data);
             }
             
             return response()->json($transactions, 200);

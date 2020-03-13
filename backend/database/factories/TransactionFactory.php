@@ -20,5 +20,6 @@ $factory->define(Transaction::class, function (Faker $faker) {
         'category_id' => 1,
         'account_id' => 1,
         'payed' => 0,
+        'is_recurring' => false
     ];
 });

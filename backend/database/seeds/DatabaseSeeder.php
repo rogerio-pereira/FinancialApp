@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         
         if(env('local') != 'production') {
             $this->call(BankAcountTableSeeder::class);
-            $this->call(TransactionTableSeeder::class);
+            //$this->call(TransactionTableSeeder::class);
         }
     }
 }
