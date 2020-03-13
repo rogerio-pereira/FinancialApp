@@ -1,7 +1,6 @@
 <template>
     <div class='row'>
         <input type='hidden' id='id' v-model='transaction.id'>
-        <input type='hidden' id='type' v-model='transaction.type'>
         
         <div class="form-group col-md-6">
             <label for="description">Description</label>
@@ -19,16 +18,6 @@
             <div class='text-danger' v-if='errors.amount'>
                 <small>
                     <p v-for='(error, index) in errors.amount' :key='index'>{{error}}</p>
-                </small>
-            </div>
-        </div>
-
-        <div class="form-group col-md-6">
-            <label for="due_at">Date</label>
-            <input type="date" class="form-control" id="due_at" v-model='transaction.due_at'>
-            <div class='text-danger' v-if='errors.due_at'>
-                <small>
-                    <p v-for='(error, index) in errors.due_at' :key='index'>{{error}}</p>
                 </small>
             </div>
         </div>
@@ -61,56 +50,26 @@
             </div>
         </div>
 
-        <div class="form-group col-md-6">
-            <label for="payed">Payed</label>
-            <select id='payed' v-model='transaction.payed' class='form-control'>
-                <option value='0'>No</option>
-                <option value='1'>Yes</option>
-            </select>
-            <div class='text-danger' v-if='errors.payed'>
-                <small>
-                    <p v-for='(error, index) in errors.payed' :key='index'>{{error}}</p>
-                </small>
+        <div class='row' v-if='transaction.first_transaction'>
+            <div class='col-md-12 text-center mt-5 mb-4'>
+                This is a repeated transaction, which one(s) do you want to update?
+            </div>
+            <div class='form-group col-md-4 text-center'>
+                <input type='radio' name='repeatCount' id='repeatCountThis' v-model='transaction.repeatCount' value='this'>
+                &nbsp;&nbsp;
+                <label for="repeatCountThis">Just this</label>
+            </div>
+            <div class='form-group col-md-4 text-center'>
+                <input type='radio' name='repeatCount' id='repeatCountNext' v-model='transaction.repeatCount' value='next'>
+                &nbsp;&nbsp;
+                <label for="repeatCountNext">This and next ones</label>
+            </div>
+            <div class='form-group col-md-4 text-center'>
+                <input type='radio' name='repeatCount' id='repeatCountAll' v-model='transaction.repeatCount' value='all'>
+                &nbsp;&nbsp;
+                <label for="repeatCountAll">All Transactions</label>
             </div>
         </div>
-
-        <div class="form-group col-md-12 text-center">
-            <input type='checkbox' id='repeat' v-model='transaction.repeat'> &nbsp; <label for="repeat">Repeat</label>
-        </div>
-
-        <transition enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp" mode='out-in'>
-            <div class='col-md-12' v-if='transaction.repeat'>
-                <div class='row'>
-                    <div class="form-group col-md-6">
-                        <label for="repeatTimes">Repeat Times</label>
-                        <input type='number' min='2' id='repeatTimes' class='form-control' v-model='transaction.repeatTimes'>
-                        <div class='text-danger' v-if='errors.repeatTimes'>
-                            <small>
-                                <p v-for='(error, index) in errors.repeatTimes' :key='index'>{{error}}</p>
-                            </small>
-                        </div>
-                    </div>
-
-                    <div class="form-group col-md-6">
-                        <label for="period">Period</label>
-                        <select id='period' v-model='transaction.period' class='form-control'>
-                            <option value='Daily'>Daily</option>
-                            <option value='Weekly'>Weekly</option>
-                            <option value='Biweekly'>Biweekly</option>
-                            <option value='Monthly'>Monthly</option>
-                            <option value='Quarterly'>Quarterly</option>
-                            <option value='Semiannually'>Semiannually</option>
-                            <option value='Annually'>Annually</option>
-                        </select>
-                        <div class='text-danger' v-if='errors.period'>
-                            <small>
-                                <p v-for='(error, index) in errors.period' :key='index'>{{error}}</p>
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
 
         <div class='form-group text-center col-md-12'>
             <button type="submit" class="btn btn-success" @click.stop.prevent='save'>Save</button>

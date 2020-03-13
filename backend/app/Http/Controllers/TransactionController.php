@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use DateTime;
+use Carbon\Carbon;
+use App\Model\BankAccount;
 use App\Model\Transaction;
 use Illuminate\Http\Request;
+use App\Model\Useful\DateConversion;
 use App\Http\Requests\TransferRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Requests\PayTransactionRequest;
-use App\Model\BankAccount;
-use App\Model\Useful\DateConversion;
-use Carbon\Carbon;
+use App\Http\Requests\TransactionEditRequest;
 
 class TransactionController extends Controller
 {
@@ -111,15 +112,33 @@ class TransactionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(TransactionRequest $request, $id)
+    public function update(TransactionEditRequest $request, $id)
     {
         $data = $request->all();
-        $data['due_at'] = date('Y-m-d', strtotime($data['due_at']));
 
         $transaction = Transaction::find($id);
-        $transaction->update($data);
+        if(!isset($transaction->first_transaction) || $data['repeatCount'] == 'this') {
+            $transaction->update($data);
 
-        return $transaction;
+            return $transaction;
+        }
+        else {
+            $transactions = [];
+
+            if($data['repeatCount'] == 'all')
+                $transactions = Transaction::where('first_transaction', $transaction->first_transaction)->get();
+            else if($data['repeatCount'] == 'next')
+                $transactions = Transaction::where('first_transaction', $transaction->first_transaction)
+                                    ->where('due_at', '>=', $transaction->due_at)
+                                    ->get();
+            
+            foreach($transactions as $t) {
+                $data['due_at'] = $t->due_at->toDateString();
+                $t->update($data);
+            }
+            
+            return response()->json($transactions, 200);
+        }
     }
 
     /**
@@ -140,7 +159,9 @@ class TransactionController extends Controller
         else if($transactionCount == 'next') {
             $transaction = Transaction::find($id);
 
-            Transaction::where('due_at', '>=', $transaction->due_at)->delete();
+            Transaction::where('first_transaction', $transaction->first_transaction)
+                ->where('due_at', '>=', $transaction->due_at)
+                ->delete();
         }
     }
 
