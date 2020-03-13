@@ -186,15 +186,24 @@ class TransactionController extends Controller
         else if($transactionCount == 'all'){
             $transaction = Transaction::find($id);
 
+            $this->deleteRecurring($transaction);
+
             Transaction::where('first_transaction', $transaction->first_transaction)->delete();
         }
         else if($transactionCount == 'next') {
             $transaction = Transaction::find($id);
 
+            $this->deleteRecurring($transaction);
+
             Transaction::where('first_transaction', $transaction->first_transaction)
                 ->where('due_at', '>=', $transaction->due_at)
                 ->delete();
         }
+    }
+
+    private function deleteRecurring($transaction)
+    {
+        RecurringTransaction::where('first_transaction', $transaction->first_transaction)->delete();
     }
 
     public function payTransaction(PayTransactionRequest $request, $id)

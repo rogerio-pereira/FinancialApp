@@ -21,6 +21,7 @@ class CreateRecurringTransactionsTable extends Migration
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('account_id');
             $table->unsignedBigInteger('first_transaction');
+            $table->string('period');
             $table->timestamps();
 
             $table->foreign('category_id')

@@ -7,6 +7,8 @@ use App\Model\User;
 use Tests\TestCase;
 use App\Model\Category;
 use App\Model\BankAccount;
+use App\Model\Transaction;
+use App\Model\RecurringTransaction;
 use App\Model\Useful\DateConversion;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,7 +34,6 @@ class RecurringExpensesTest extends TestCase
      */
     public function aUserCanCreateARecurringTransactions($date, $frequency, $repeatTimes)
     {
-        $this->withoutExceptionHandling();
         $this->actingAs(factory(User::class)->create(), 'api');
         factory(Category::class)->create();
         factory(BankAccount::class)->create();
@@ -77,6 +78,7 @@ class RecurringExpensesTest extends TestCase
             'category_id' => 1,
             'account_id' => 1,
             'first_transaction' => 1,
+            'period' => $frequency,
         ]);
     }
 
@@ -126,5 +128,206 @@ class RecurringExpensesTest extends TestCase
             ['2020-06-15', 'Annually', 1],
             ['2020-12-25', 'Annually', 1],
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function aUserCanDeleteASingleRecurringTransactionWithoutDeletingTheRecurringModel()
+    {
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class)->create();
+        factory(BankAccount::class)->create();
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => '2020-01-01',
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => '2020-06-01',
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(RecurringTransaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => '2020-06-01',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Semiannually'
+        ]);
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => '2020-06-01 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Semiannually'
+        ]);
+
+        $request = $this->delete('/api/transactions/1/this');
+        $request->assertOk();
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => '2020-06-01 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Semiannually'
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function aUserCanDeleteThisAndNextRecurringTransactionsDeletingTheRecurringModel()
+    {
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class)->create();
+        factory(BankAccount::class)->create();
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => '2020-01-01',
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => '2020-06-01',
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(RecurringTransaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => '2020-06-01',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Semiannually'
+        ]);
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => '2020-06-01 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Semiannually'
+        ]);
+
+        $request = $this->delete('/api/transactions/1/next');
+        $request->assertOk();
+
+        $this->assertDatabaseMissing('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => '2020-06-01 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Semiannually'
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function aUserCanDeleteAllRecurringTransactionsDeletingTheRecurringModel()
+    {
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class)->create();
+        factory(BankAccount::class)->create();
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => '2020-01-01',
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(Transaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => '2020-06-01',
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => false,
+            'first_transaction' => 1,
+            'is_recurring' => true,
+        ]);
+        factory(RecurringTransaction::class)->create([
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => '2020-06-01',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Semiannually'
+        ]);
+
+        $this->assertDatabaseHas('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => '2020-06-01 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Semiannually'
+        ]);
+
+        $request = $this->delete('/api/transactions/1/all');
+        $request->assertOk();
+
+        $this->assertDatabaseMissing('recurring_transactions', [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'last_date' => '2020-06-01 00:00:00',
+            'category_id' => 1,
+            'account_id' => 1,
+            'first_transaction' => 1,
+            'period' => 'Semiannually'
+        ]);
     }
 }
