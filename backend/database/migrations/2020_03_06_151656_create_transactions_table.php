@@ -34,9 +34,10 @@ class CreateTransactionsTable extends Migration
                 ->references('id')
                 ->on('bank_accounts');
 
-            $table->foreign('first_transaction')
-                ->references('id')
-                ->on('transactions');
+            // Deleted the foreign Key to allow to delete the first repeated transaction
+            // $table->foreign('first_transaction')
+            //     ->references('id')
+            //     ->on('transactions');
         });
     }
 

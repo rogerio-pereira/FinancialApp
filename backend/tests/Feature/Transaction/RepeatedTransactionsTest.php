@@ -853,6 +853,89 @@ class RepeatedTransactionsTest extends TestCase
      */
     public function aUserCanDeleteFirstRepeatedTransactions()
     {
+        $this->withoutExceptionHandling();
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class)->create();
+        factory(BankAccount::class)->create();
+        
+        $repeatedDate = Carbon::now()->firstOfMonth()->toDateString();
+        for($i=0; $i<3; $i++) {
+            factory(Transaction::class)->create([
+                'description' => 'Repeat',
+                'type' => 'Income',
+                'amount' => 50,
+                'due_at' => $repeatedDate,
+                'payed' => 0,
+                'first_transaction' => 1
+            ]);
 
+            $repeatedDate = DateConversion::newDateByPeriod($repeatedDate, 'Biweekly')->toDateString();
+        }
+
+        $response = $this->get('/api/transactions');
+
+        $response->assertOk()
+            ->assertJsonCount(3)
+            ->assertJson([
+                [
+                    'id' => 3,
+                    'description' => 'Repeat',
+                    'amount' => 50,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->firstOfMonth()->addWeek(4)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 2,
+                    'description' => 'Repeat',
+                    'amount' => 50,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->firstOfMonth()->addWeek(2)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 1,
+                    'description' => 'Repeat',
+                    'amount' => 50,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->firstOfMonth()->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+            ]);
+
+        $request = $this->delete('/api/transactions/1/this');
+        $request->assertOk();
+
+        $response2 = $this->get('/api/transactions');
+        $response2->assertOk()
+            ->assertJsonCount(2)
+            ->assertJson([
+                [
+                    'id' => 3,
+                    'description' => 'Repeat',
+                    'amount' => 50,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->firstOfMonth()->addWeek(4)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+                [
+                    'id' => 2,
+                    'description' => 'Repeat',
+                    'amount' => 50,
+                    'type' => 'Income',
+                    'due_at' => Carbon::now()->firstOfMonth()->addWeek(2)->toDateString(),
+                    'category_id' => 1,
+                    'account_id' => 1,
+                    'payed' => false,
+                ],
+            ]);
     }
 }
