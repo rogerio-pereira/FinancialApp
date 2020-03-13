@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTransactionsTable extends Migration
+class CreateRecurringTransactionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,14 @@ class CreateTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('transactions', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('recurring_transactions', function (Blueprint $table) {$table->bigIncrements('id');
             $table->string('description');
             $table->decimal('amount');
-            $table->string('type')->default('Expense');
-            $table->boolean('is_transfer')->default(false);
-            $table->date('due_at');
+            $table->string('type');
+            $table->date('last_date');
             $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('account_id');
-            $table->unsignedBigInteger('first_transaction')->nullable();
-            $table->boolean('is_recurring')->default(false);
-            $table->boolean('payed')->default(false);
+            $table->unsignedBigInteger('first_transaction');
             $table->timestamps();
 
             $table->foreign('category_id')
@@ -34,11 +30,6 @@ class CreateTransactionsTable extends Migration
             $table->foreign('account_id')
                 ->references('id')
                 ->on('bank_accounts');
-
-            // Deleted the foreign Key to allow to delete the first repeated transaction
-            // $table->foreign('first_transaction')
-            //     ->references('id')
-            //     ->on('transactions');
         });
     }
 
@@ -49,6 +40,6 @@ class CreateTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('recurring_transactions');
     }
 }

@@ -12,6 +12,7 @@ use App\Http\Requests\TransferRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Requests\PayTransactionRequest;
 use App\Http\Requests\TransactionEditRequest;
+use App\Model\RecurringTransaction;
 
 class TransactionController extends Controller
 {
@@ -58,7 +59,10 @@ class TransactionController extends Controller
 
         $transaction = Transaction::create($data);
 
-        if(!isset($data['repeat']) || $data['repeat'] == false)
+        if(
+            (!isset($data['repeat']) || $data['repeat'] == false) && 
+            (!isset($data['recurring']) || $data['recurring'] == false)
+        )
             return $transaction;
         else {
             $firstTransactionId = $transaction->id;
@@ -71,16 +75,44 @@ class TransactionController extends Controller
             $data['payed'] = false;
             $date = Carbon::createFromFormat('Y-m-d', $data['due_at'])->format('Y-m-d');
 
-            for($i=1; $i<$data['repeatTimes']; $i++) {
-                $date = DateConversion::newDateByPeriod($date, $data['period'])->toDateString();
-                $data['due_at'] = $date;
+            if(isset($data['repeat']) && $data['repeat'] == true) {
+                for($i=1; $i<$data['repeatTimes']; $i++) {
+                    $date = DateConversion::newDateByPeriod($date, $data['period'])->toDateString();
+                    $transactions[] = $this->createRecurringTransaction($data, $date);
+                }
+            }
+            else if(isset($data['recurring']) && $data['recurring'] == true){
+                $transaction->is_recurring = true;
+                $transaction->save();
 
-                $transaction = Transaction::create($data);
-                $transactions[] = $transaction;
+                $endofYear = Carbon::createFromFormat('Y-m-d', $date)->endOfYear();
+                $lastDate = $date; //Used to get the last date to create recurring model
+                $date = DateConversion::newDateByPeriod($date, $data['period'])->toDateString();
+
+                while(Carbon::createFromFormat('Y-m-d', $date)->isBefore($endofYear)) {
+                    $lastDate = $date; //Used to get the last date to create recurring model
+                    $transactions[] = $this->createRecurringTransaction($data, $date);
+                    $date = DateConversion::newDateByPeriod($date, $data['period'])->toDateString();
+                }
+
+                $data['last_date'] = $lastDate;
+                $this->createRecurringTransactionModel($data);
             }
 
             return response()->json($transactions, 201);
         }
+    }
+
+    private function createRecurringTransaction($transactionData, $date) {
+        $transactionData['due_at'] = $date;
+
+        $transaction = Transaction::create($transactionData);
+
+        return $transaction;
+    }
+
+    private function createRecurringTransactionModel($data) {
+        RecurringTransaction::create($data);
     }
 
     /**
