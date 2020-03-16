@@ -29,9 +29,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('categories', 'CategoryController');
 
     Route::put('transaction/{id}/pay', 'TransactionController@payTransaction');
-    
+    Route::get('transactions/{month}/{year}', 'TransactionController@index');
     Route::post('transactions/new/transfer', 'TransactionController@transfer');
     Route::delete('transactions/{id}/{transactionCount}', 'TransactionController@destroy');
+    Route::resource('transactions', 'TransactionController');
 });
-Route::get('transactions/{month}/{year}', 'TransactionController@index');
-Route::resource('transactions', 'TransactionController');
