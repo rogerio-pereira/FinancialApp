@@ -14,7 +14,7 @@ class RecurringTransaction extends Model
         'category_id',
         'account_id',
         'first_transaction',
-        'period'
+        'period',
     ];
 
     protected $dates = [

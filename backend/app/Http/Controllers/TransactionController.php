@@ -105,8 +105,10 @@ class TransactionController extends Controller
 
     private function createRecurringTransaction($transactionData, $date) {
         $transactionData['due_at'] = $date;
-
+        $transactionData['is_recurring'] = true;
+        
         $transaction = Transaction::create($transactionData);
+        $transaction->save();
 
         return $transaction;
     }
@@ -157,20 +159,22 @@ class TransactionController extends Controller
         else {
             $transactions = [];
 
-                if($data['repeatCount'] == 'all')
-                    $transactions = Transaction::where('first_transaction', $transaction->first_transaction)->get();
-                else if($data['repeatCount'] == 'next')
-                    $transactions = Transaction::where('first_transaction', $transaction->first_transaction)
-                                        ->where('due_at', '>=', $transaction->due_at)
-                                        ->get();
-                
-                foreach($transactions as $t) {
-                    $data['due_at'] = $t->due_at->toDateString();
-                    $t->update($data);
-                }
+            if($data['repeatCount'] == 'all')
+                $transactions = Transaction::where('first_transaction', $transaction->first_transaction)->get();
+            else if($data['repeatCount'] == 'next')
+                $transactions = Transaction::where('first_transaction', $transaction->first_transaction)
+                                    ->where('due_at', '>=', $transaction->due_at)
+                                    ->get();
+            
+            foreach($transactions as $t) {
+                $data['due_at'] = $t->due_at->toDateString();
+                $t->update($data);
+            }
 
+            //Update Recurring Model
             if($transaction->is_recurring == true) {
                 $recurring = RecurringTransaction::where('first_transaction', $transaction->first_transaction)->get()->first();
+                $data['last_date'] = $recurring->last_date->toDateString();
                 $recurring->update($data);
             }
             

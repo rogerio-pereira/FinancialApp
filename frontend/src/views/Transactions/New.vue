@@ -34,6 +34,8 @@
                     repeat: false,
                     repeatTimes: 2,
                     period: 'Monthly',
+
+                    recurring: false
                 },
                 errors: {}
             }

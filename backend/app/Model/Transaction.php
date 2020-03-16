@@ -16,6 +16,7 @@ class Transaction extends Model
         'account_id',
         'first_transaction',
         'payed',
+        'is_recurring'
     ];
 
     protected $dates = [

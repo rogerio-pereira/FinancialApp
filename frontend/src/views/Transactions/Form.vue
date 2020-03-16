@@ -75,7 +75,11 @@
         </div>
 
         <div class="form-group col-md-12 text-center">
-            <input type='checkbox' id='repeat' v-model='transaction.repeat'> &nbsp; <label for="repeat">Repeat</label>
+            <input type='checkbox' id='repeat' v-model='transaction.repeat' @change='clickRepeat()'> 
+            &nbsp; <label for="repeat">Repeat</label>
+
+            <input type='checkbox' id='recurring' v-model='transaction.recurring' class='ml-5' @change='clickRecurring()'> 
+            &nbsp; <label for="recurring">Recurring</label>
         </div>
 
         <transition enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp" mode='out-in'>
@@ -92,6 +96,30 @@
                     </div>
 
                     <div class="form-group col-md-6">
+                        <label for="period">Period</label>
+                        <select id='period' v-model='transaction.period' class='form-control'>
+                            <option value='Daily'>Daily</option>
+                            <option value='Weekly'>Weekly</option>
+                            <option value='Biweekly'>Biweekly</option>
+                            <option value='Monthly'>Monthly</option>
+                            <option value='Quarterly'>Quarterly</option>
+                            <option value='Semiannually'>Semiannually</option>
+                            <option value='Annually'>Annually</option>
+                        </select>
+                        <div class='text-danger' v-if='errors.period'>
+                            <small>
+                                <p v-for='(error, index) in errors.period' :key='index'>{{error}}</p>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <transition enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp" mode='in-out'>
+            <div class='col-md-12' v-if='transaction.recurring'>
+                <div class='row'>
+                    <div class="form-group col-md-12">
                         <label for="period">Period</label>
                         <select id='period' v-model='transaction.period' class='form-control'>
                             <option value='Daily'>Daily</option>
@@ -160,6 +188,14 @@
         methods: {
             save(){
                 this.$emit('save', {data: this.transaction})
+            },
+            clickRepeat() {
+                if(this.transaction.repeat == true)
+                    this.transaction.recurring = false
+            },
+            clickRecurring() {
+                if(this.transaction.recurring == true)
+                    this.transaction.repeat = false
             }
         }
     }
