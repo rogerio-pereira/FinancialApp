@@ -37,7 +37,12 @@ class TransactionRequest extends FormRequest
             //Repeat
             'repeat' => 'nullable',
             'repeatTimes' => 'required_if:repeat,true|numeric',
-            'period' => 'required_if:repeat,true|in:Daily,Weekly,Biweekly,Monthly,Quarterly,Semiannually,Annually',
+
+            //Recurring
+            'recurring' => 'nullable',
+
+            //period
+            'period' => 'required_if:repeat,true|required_if:recurring,true|in:Daily,Weekly,Biweekly,Monthly,Quarterly,Semiannually,Annually',
         ];
     }
 

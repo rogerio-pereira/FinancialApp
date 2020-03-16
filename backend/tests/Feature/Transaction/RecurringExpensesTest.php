@@ -133,6 +133,41 @@ class RecurringExpensesTest extends TestCase
     /**
      * @test
      */
+    public function aUserCantCreateARecurringTransactionWithoutPeriod()
+    {
+        $this->actingAs(factory(User::class)->create(), 'api');
+        factory(Category::class)->create();
+        factory(BankAccount::class)->create();
+
+        $transaction = [
+            'description' => 'Transaction',
+            'amount' => 50,
+            'type' => 'Expense',
+            'due_at' => Carbon::now()->toDateString(),
+            'category_id' => 1,
+            'account_id' => 1,
+            'payed' => true,
+
+            'recurring' => true,
+            //'period' => 'Daily'
+        ];
+
+        //POST
+        $request = $this->post('/api/transactions', $transaction);
+
+        $request->assertStatus(422)
+            ->assertJson([ 
+                'errors' => [
+                    'period' => [
+                        'The period between each transaction must be informed.'
+                    ],
+                ]
+            ]);
+    }
+
+    /**
+     * @test
+     */
     public function aUserCanDeleteASingleRecurringTransactionWithoutDeletingTheRecurringModel()
     {
         $this->actingAs(factory(User::class)->create(), 'api');
